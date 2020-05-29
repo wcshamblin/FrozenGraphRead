@@ -43,17 +43,22 @@ def readimg(file_name,
     dims_expander = tf.expand_dims(float_caster, 0)
     resized = tf.compat.v1.image.resize_bilinear(dims_expander, [input_height, input_width])
     normalized = tf.divide(tf.subtract(resized, [input_mean]), [input_std])
-    image = map_fn(normalized, image_str_tensor, back_prop=False, dtype=tf.uint8)
+    image = tf.compat.v1.map_fn(normalized, image_str_tensor, back_prop=False, dtype=tf.uint8)
     # image = tf.nest.map_structure(tf.stop_gradient, tf.map_fn(normalized, image_str_tensor))
     # sess = tf.compat.v1.Session()
     # result = sess.run(normalized)
     return image
 
+# def readimg(file_name, target_size):
+#     img = tf.keras.preprocessing.image.load_img(file_name, target_size=target_size)
+#     print(img)
+#     return(img)
+
 
 fgraph = load_graph(args.fgraph)
 
 if args.inode and args.onode:
-    img = readimg("cardinal.jpg", 720, 540)
+    img = readimg("cardinal.jpg", 300, 300)
     inode = fgraph.get_operation_by_name(args.inode)
     onode = fgraph.get_operation_by_name(args.onode)
     with tf.compat.v1.Session(graph=fgraph) as tfs:
