@@ -49,6 +49,21 @@ def readimg(file_name,
     # result = sess.run(normalized)
     return image
 
+def load_model(model_name):
+  base_url = 'http://download.tensorflow.org/models/object_detection/'
+  model_file = model_name + '.tar.gz'
+  model_dir = tf.keras.utils.get_file(
+    fname=model_name, 
+    origin=base_url + model_file,
+    untar=True)
+
+  model_dir = pathlib.Path(model_dir)/"saved_model"
+
+  model = tf.saved_model.load(str(model_dir))
+  model = model.signatures['serving_default']
+
+  return model
+
 # def readimg(file_name, target_size):
 #     img = tf.keras.preprocessing.image.load_img(file_name, target_size=target_size)
 #     print(img)
